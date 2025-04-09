@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Ir para a pasta src
+      working-directory: ./src
+      run: echo "Entrando na pasta src"
+
+    - name: Restore dependências
+      working-directory: ./src
+      run: dotnet restore ResellFlow.sln
+
+    - name: Build
+      working-directory: ./src
+      run: dotnet build ResellFlow.sln --no-restore --configuration Release
+
+    - name: Testes
+      working-directory: ./src
+      run: dotnet test ResellFlow.Tests/ResellFlow.Tests.csproj --no-build --configuration Release --verbosity normal
