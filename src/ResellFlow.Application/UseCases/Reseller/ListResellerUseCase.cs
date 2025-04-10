@@ -23,7 +23,11 @@ public class ListResellerUseCase(IResellerRepository repository)
                     Cnpj = reseller.Cnpj,
                     CorporateName = reseller.CorporateName,
                     TradeName = reseller.TradeName,
-                    Email = reseller.Email
+                    Email = reseller.Email,
+                    Phones = reseller.Phones,
+                    DeliveryAddresses = reseller.DeliveryAddresses,
+                    Contacts = reseller.Contacts,
+                    
                 }
             };
         }
@@ -35,7 +39,10 @@ public class ListResellerUseCase(IResellerRepository repository)
             Cnpj = r.Cnpj,
             CorporateName = r.CorporateName,
             TradeName = r.TradeName,
-            Email = r.Email
+            Email = r.Email,
+            Phones = r.Phones,
+            DeliveryAddresses = r.DeliveryAddresses,
+            Contacts = r.Contacts,
         }).ToList();
     }
 }

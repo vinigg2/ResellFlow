@@ -8,17 +8,12 @@ namespace ResellFlow.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ResellerController : ControllerBase
+public class ResellerController(IResellerRepository repository) : ControllerBase
 {
-    private readonly CreateResellerUseCase _createUseCase;
-    private readonly ListResellerUseCase _listResellerUseCase;
-    private readonly UpdateResellerUseCase _updateUseCase;
-    private readonly DeleteResellerUseCase _deleteUseCase;
-
-    public ResellerController(IResellerRepository repository)
-    {
-        _createUseCase = new CreateResellerUseCase(repository);
-    }
+    private readonly CreateResellerUseCase _createUseCase = new(repository);
+    private readonly ListResellerUseCase _listResellerUseCase = new(repository);
+    private readonly UpdateResellerUseCase _updateUseCase = new(repository);
+    private readonly DeleteResellerUseCase _deleteUseCase = new(repository);
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateResellerRequest request)
