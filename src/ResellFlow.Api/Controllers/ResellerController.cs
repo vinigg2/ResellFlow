@@ -11,11 +11,12 @@ namespace ResellFlow.API.Controllers;
 public class ResellerController : ControllerBase
 {
     private readonly CreateResellerUseCase _createUseCase;
-    private readonly IResellerRepository _repository;
+    private readonly ListResellerUseCase _listResellerUseCase;
+    private readonly UpdateResellerUseCase _updateUseCase;
+    private readonly DeleteResellerUseCase _deleteUseCase;
 
     public ResellerController(IResellerRepository repository)
     {
-        _repository = repository;
         _createUseCase = new CreateResellerUseCase(repository);
     }
 
@@ -45,7 +46,7 @@ public class ResellerController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var reseller = await _repository.GetByIdAsync(id);
+        var reseller = await _listResellerUseCase.ExecuteAsync(id);
         if (reseller == null)
             return NotFound();
 
@@ -55,7 +56,21 @@ public class ResellerController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var resellers = await _repository.GetAllAsync();
+        var resellers = await _listResellerUseCase.ExecuteAsync();
         return Ok(resellers);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateResellerRequest request)
+    {
+        await _updateUseCase.ExecuteAsync(id, request);
+        return Ok();
+    }
+    
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        await _deleteUseCase.ExecuteAsync(id);
+        return Ok();
     }
 }

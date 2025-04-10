@@ -6,7 +6,7 @@ namespace ResellFlow.Application.UseCases.Order;
 
 public class ListOrderUseCase(IOrderRepository repository)
 {
-    public async Task<object> ExecuteAsync(Guid? id)
+    public async Task<object> ExecuteAsync(Guid? id = null)
     {
         if (id.HasValue)
         {

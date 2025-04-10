@@ -30,7 +30,7 @@ public class OrderController(IOrderRepository repository) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var orders = await _listUseCase.ExecuteAsync(null);
+        var orders = await _listUseCase.ExecuteAsync();
         return Ok(orders);
     }
     
