@@ -1,124 +1,97 @@
 # 🚀 ResellFlow API
 
-API para gerenciamento de revendas, onde clientes enviam pedidos para suas respectivas revendas. A revenda pode, posteriormente, emitir um pedido consolidado para um sistema externo.
+A ResellFlow API é uma solução para gerenciamento de revendas e seus pedidos. Ela permite que clientes enviem pedidos para suas respectivas revendas e, posteriormente, a revenda emita um pedido consolidado para um sistema externo.
 
 ---
 
 ## 🧱 Arquitetura
 
-A aplicação segue os princípios de:
-
 - ✅ Arquitetura Hexagonal (Ports & Adapters)
+- ✅ Princípios SOLID
 - ✅ Clean Code
-- ✅ SOLID
-- ✅ Injeção de Dependência (nativa do .NET)
-- ✅ Validações com FluentValidation
-- ✅ Resiliência com Polly (retry/fallback)
+- ✅ FluentValidation para validação
+- ✅ Polly para resiliência
+- ✅ Testes unitários com xUnit e Moq
+- ✅ Injeção de Dependência nativa do .NET
 
 ---
 
-## 🔁 Fluxograma da Solução
+## 🔁 Rotas da API
 
-![Fluxo da API](resellflow_api_flow.png)
+### 📦 Resellers
+
+| Método | Rota                                                      | Descrição                                               |
+|--------|-----------------------------------------------------------|----------------------------------------------------------|
+| POST   | `/api/reseller`                                           | Cadastra uma nova revenda                               |
+| GET    | `/api/reseller`                                           | Lista todas as revendas                                 |
+| GET    | `/api/reseller/{id}`                                      | Busca uma revenda pelo ID                               |
+| PUT    | `/api/reseller/{id}`                                      | Atualiza dados de uma revenda                           |
+| DELETE | `/api/reseller/{id}`                                      | Remove uma revenda                                      |
+| POST   | `/api/reseller/{clientIdentifier}/emitir-pedido`          | Emite o pedido consolidado para o sistema externo       |
+
+### 🧾 Orders
+
+| Método | Rota                    | Descrição                                |
+|--------|-------------------------|-------------------------------------------|
+| POST   | `/api/order`            | Cria um novo pedido                       |
+| GET    | `/api/order`            | Lista todos os pedidos                    |
+| GET    | `/api/order/{id}`       | Busca um pedido pelo ID                   |
+| DELETE | `/api/order/{id}`       | Remove um pedido                          |
 
 ---
 
-## 🧩 Módulos
+## 🧩 Casos de Uso
 
-### 1. Cadastro de Revenda
-- `POST /api/resellers`
-- Validações: CNPJ, e-mail, telefone, etc.
-- Campos aninhados:
-  ```json
-  {
-    "contacts": [
-      { "name": "Fulano", "email": "fulano@email.com" }
-    ],
-    "deliveryAddresses": [
-      {
-        "street": "Rua X",
-        "district": "Bairro Y",
-        "city": "São Paulo",
-        "state": "SP",
-        "zipCode": "01234-567",
-        "number": "100",
-        "complement": "Sala 2"
-      }
-    ]
-  }
-  ```
-
-### 2. Criação de Pedido
-- `POST /api/orders`
-- Cada pedido é associado a uma revenda via `clientIdentifier`
-  ```json
-  {
-    "clientIdentifier": "revenda-xyz",
-    "items": [
-      { "product": "Produto A", "quantity": 400 },
-      { "product": "Produto B", "quantity": 600 }
-    ]
-  }
-  ```
-
-### 3. Emissão de Pedido Consolidado da Revenda
-- `POST /api/revendas/{clientIdentifier}/emitir-pedido`
-- Soma todas as quantidades de todos os pedidos da revenda
-- Valida se soma ≥ 1000
-- Envia para sistema externo
-- Exemplo de resposta:
-  ```json
-  {
-    "orderId": "EXT-123456",
-    "items": [
-      { "product": "Produto A", "quantity": 400 },
-      { "product": "Produto B", "quantity": 600 }
-    ]
-  }
-  ```
+- `CreateOrderUseCase`
+- `ListOrderUseCase`
+- `DeleteOrderUseCase`
+- `CreateResellerUseCase`
+- `ListResellerUseCase`
+- `UpdateResellerUseCase`
+- `DeleteResellerUseCase`
+- `EmitResellerOrderUseCase`
 
 ---
 
 ## 🧪 Testes
 
-- Validação de criação de revenda
-- Pedido com lista de itens válida/inválida
-- Emissão consolidada:
-  - Soma < 1000 → erro
-  - Soma ≥ 1000 → sucesso (mockado)
-
-Execute os testes com:
+Para rodar os testes unitários:
 
 ```bash
 dotnet test
 ```
 
+Cobrem os principais fluxos da aplicação: criação, listagem, atualização, remoção e emissão de pedidos.
+
 ---
 
-## 🐳 Como rodar
+## 🐳 Executando com Docker
 
 ```bash
 docker-compose up --build
 ```
 
-Swagger disponível em: `http://localhost:5000/swagger`
+Acesse via Swagger: [http://localhost:5000/swagger](http://localhost:5000/swagger)
 
 ---
 
-## 📂 Estrutura
+## 📂 Estrutura do Projeto
 
 ```
-ResellFlow.Api             -> Controllers, Program.cs
-ResellFlow.Application     -> UseCases, DTOs, Validators
-ResellFlow.Domain          -> Entidades e Interfaces
-ResellFlow.Infrastructure  -> Repositórios e Clients
-ResellFlow.Tests           -> Testes unitários (xUnit)
+src/
+├── ResellFlow.Api             # Controllers e Program.cs
+├── ResellFlow.Application     # UseCases, DTOs, Validations
+├── ResellFlow.Domain          # Entidades e Interfaces
+├── ResellFlow.Infrastructure  # Repositórios e HTTP Clients
+├── ResellFlow.Tests           # Testes unitários com xUnit e Moq
 ```
 
 ---
 
-## 🔗 Observações
+## 🧠 Observações
 
-- Repositório em memória para simulação
-- Envio externo é mockado e instável com Polly
-- A rota antiga `POST /api/orders/{id}/send-to-resell-flow` foi descontinuada
+- Todos os repositórios são implementados in-memory (mockados)
+- O sistema externo de pedidos é simulado com retry via Polly
+- A rota `/emitir-pedido` exige que a soma das quantidades dos pedidos seja >= 1000
+
+---
