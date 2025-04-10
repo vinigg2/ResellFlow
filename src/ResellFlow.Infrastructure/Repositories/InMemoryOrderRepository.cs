@@ -31,4 +31,11 @@ public class InMemoryOrderRepository : IOrderRepository
 
         return Task.FromResult(orders);
     }
+    
+    public Task DeleteAsync(Guid Id)
+    {
+        var orderToDelete = _orders.FirstOrDefault(o => o.Id == Id);
+        _orders.Remove(orderToDelete);
+        return Task.CompletedTask;
+    }
 }

@@ -8,4 +8,5 @@ public interface IOrderRepository
     Task<Order?> GetByIdAsync(Guid id);
     Task<IEnumerable<Order>> GetAllAsync();
     Task<List<Order>> GetByClientIdentifierAsync(String clientIdentifier);
+    Task DeleteAsync(Guid id);
 }

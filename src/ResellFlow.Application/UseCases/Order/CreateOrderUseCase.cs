@@ -24,7 +24,7 @@ public class CreateOrderUseCase(IOrderRepository repository)
         return new OrderResponse
         {
             OrderId = saved.Id,
-            Items = request.Items
+            Items = order.Items
         };
     }
 }

@@ -7,16 +7,11 @@ namespace ResellFlow.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class OrderController : ControllerBase
+public class OrderController(IOrderRepository repository) : ControllerBase
 {
-    private readonly CreateOrderUseCase _createUseCase;
-    private readonly IOrderRepository _repository;
-
-    public OrderController(IOrderRepository repository)
-    {
-        _repository = repository;
-        _createUseCase = new CreateOrderUseCase(repository);
-    }
+    private readonly CreateOrderUseCase _createUseCase = new(repository);
+    private readonly ListOrderUseCase _listUseCase = new(repository);
+    private readonly DeleteOrderUseCase _deleteUseCase = new(repository);
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateOrderRequest request)
@@ -28,16 +23,21 @@ public class OrderController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var order = await _repository.GetByIdAsync(id);
-        if (order == null) return NotFound();
-
+        var order = await _listUseCase.ExecuteAsync(id);
         return Ok(order);
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var orders = await _repository.GetAllAsync();
+        var orders = await _listUseCase.ExecuteAsync(null);
         return Ok(orders);
+    }
+    
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        await _deleteUseCase.ExecuteAsync(id);
+        return Ok();
     }
 }
