@@ -15,6 +15,10 @@ A ResellFlow API é uma solução para gerenciamento de revendas e seus pedidos.
 - ✅ Injeção de Dependência nativa do .NET
 
 ---
+## 🔁 Fluxograma da Solução 
+
+![Fluxo da API](resellflow_api_flow.png)
+---
 
 ## 🔁 Rotas da API
 
